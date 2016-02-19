@@ -50,13 +50,13 @@ public class DatabaseConverter
             Class.forName("org.h2.Driver");
             // STEP 3: Open a connection
             System.out.println("Connecting to database...");
-            conn = DriverManager.getConnection("jdbc:h2:./databases/test");
+            conn = DriverManager.getConnection("jdbc:h2:./databases/pokemobs");
             System.out.println(conn.getMetaData());
             // STEP 4: Execute a query
             System.out.println("Creating statement...");
             stmt = conn.createStatement();
             // drop();
-            // init();
+             init();
 
             convertToXML();
             // drop();
