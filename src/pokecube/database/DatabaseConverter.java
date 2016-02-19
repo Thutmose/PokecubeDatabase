@@ -55,11 +55,8 @@ public class DatabaseConverter
             // STEP 4: Execute a query
             System.out.println("Creating statement...");
             stmt = conn.createStatement();
-            // drop();
-             init();
-
+            init();
             convertToXML();
-            // drop();
         }
         catch (SQLException se)
         {
@@ -100,18 +97,16 @@ public class DatabaseConverter
         System.out.println("Goodbye!");
     }// end main
 
-    static void drop() throws SQLException
-    {
-        System.out.println("Dropping old tables");
-        stmt.executeUpdate("DROP TABLE EVS");
-        stmt.executeUpdate("DROP TABLE SPAWNS");
-        stmt.executeUpdate("DROP TABLE BASESTATS");
-        stmt.executeUpdate("DROP TABLE ABILITES");
-        stmt.executeUpdate("DROP TABLE POKEDEX");
-    }
-
     static void init() throws SQLException
     {
+        try
+        {
+            stmt.executeUpdate("DROP TABLE POKEDEX");
+            System.out.println("Dropped Old table");
+        }
+        catch (SQLException e)
+        {
+        }
         stmt.executeUpdate("CREATE TABLE POKEDEX");
         System.out.println("copying...");
         stmt.executeUpdate("CREATE TABLE EVS AS SELECT * FROM CSVREAD('./databases/evsXp.csv');");
@@ -119,6 +114,11 @@ public class DatabaseConverter
         stmt.executeUpdate("CREATE TABLE ABILITES AS SELECT * FROM  CSVREAD('./databases/abilities.csv');");
         stmt.executeUpdate("CREATE TABLE BASESTATS AS SELECT * FROM CSVREAD('./databases/baseSTats.csv');");
         copyToPokedex();
+        System.out.println("Dropping Temporary tables");
+        stmt.executeUpdate("DROP TABLE EVS");
+        stmt.executeUpdate("DROP TABLE SPAWNS");
+        stmt.executeUpdate("DROP TABLE BASESTATS");
+        stmt.executeUpdate("DROP TABLE ABILITES");
         outputCSVs();
     }
 
@@ -172,8 +172,6 @@ public class DatabaseConverter
                 ArrayList<String> row2 = rows.get(i + 1);
                 if (row.size() < 2) continue;
                 if (row2.size() < 2) continue;
-
-                // if (i > 5) break;
 
                 String[] levels = row.get(1).split(":");
                 String[] moves = row2.get(1).split(":");
