@@ -13,7 +13,7 @@ public class StatsWriter
             if (evs[i] != 0) hasEV = true;
         boolean hasStats = false;
         for (int i = 0; i < 6; i++)
-            if (evs[i] != 0) hasStats = true;
+            if (stats[i] != 0) hasStats = true;
         boolean hasSizes = false;
         for (int i = 0; i < 3; i++)
             if (size[i] > 0) hasSizes = true;
