@@ -117,7 +117,7 @@ public class XMLWriter
                         }
                     }
                 }
-                else if (!field.equals("UNUSED") && !value.isEmpty())
+                else if (!field.equals("UNUSED") && !value.isEmpty() && !(field.equals("HELDITEM") && value.trim().equals("0")))
                 {
                     Element stat = doc.createElement(field);
                     stat.appendChild(doc.createTextNode(value));
