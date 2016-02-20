@@ -94,7 +94,7 @@ public class DatabaseConverter
                 se.printStackTrace();
             } // end finally try
         } // end try
-        System.out.println("Goodbye!");
+        System.out.println("\nGoodbye!");
     }// end main
 
     static void init() throws SQLException

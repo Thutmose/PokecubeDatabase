@@ -6,7 +6,7 @@ import org.w3c.dom.Element;
 
 public class StatsWriter
 {
-    static void writeStats(int[] stats, int[] evs, Document doc, Element statsNode)
+    static void writeStats(int[] stats, int[] evs, float[] size, Document doc, Element statsNode)
     {
         boolean hasEV = false;
         for (int i = 0; i < 6; i++)
@@ -14,6 +14,9 @@ public class StatsWriter
         boolean hasStats = false;
         for (int i = 0; i < 6; i++)
             if (evs[i] != 0) hasStats = true;
+        boolean hasSizes = false;
+        for (int i = 0; i < 3; i++)
+            if (size[i] > 0) hasSizes = true;
         Attr attr;
         if (hasStats)
         {
@@ -61,9 +64,29 @@ public class StatsWriter
             attr.setValue("" + evs[5]);
             evEl.setAttributeNode(attr);
         }
+        if (hasSizes)
+        {
+            Element sizeEl = doc.createElement("SIZES");
+            statsNode.appendChild(sizeEl);
+            if (size[0] > 0)
+            {
+                attr = doc.createAttribute("width");
+                attr.setValue("" + size[0]);
+                sizeEl.setAttributeNode(attr);
+                attr = doc.createAttribute("length");
+                attr.setValue("" + size[2]);
+                sizeEl.setAttributeNode(attr);
+            }
+            if (size[1] > 0)
+            {
+                attr = doc.createAttribute("height");
+                attr.setValue("" + size[1]);
+                sizeEl.setAttributeNode(attr);
+            }
+        }
     }
-    
-    static boolean handleNode(String field, String value, String[] types, int[] evs, int[] stats)
+
+    static boolean handleNode(String field, String value, String[] types, int[] evs, int[] stats, float[] size)
     {
         if (field.equals("HP"))
         {
@@ -133,6 +156,19 @@ public class StatsWriter
         else if (field.equals("TYPE2"))
         {
             types[1] = value;
+            return true;
+        }
+        else if (field.equals("HEIGHT"))
+        {
+            size[1] = Float.parseFloat(value);
+            return true;
+        }
+        else if (field.equals("WIDTHLENGHT"))
+        {
+            String[] args = value.split(":");
+            size[0] = Float.parseFloat(args[0]);
+            if (args.length == 2) size[2] = Float.parseFloat(args[1]);
+            else size[2] = size[0];
             return true;
         }
         return false;

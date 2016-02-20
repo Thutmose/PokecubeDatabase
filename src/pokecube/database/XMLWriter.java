@@ -40,7 +40,10 @@ public class XMLWriter
 
         int[] evs = new int[6];
         int[] stats = new int[6];
+        float[] size = { -1, -1, -1 };
         String[] types = { "", "" };
+        String ability = "";
+        String hiddenAbility = "";
         for (int i = 0; i < fields.size(); i++)
         {
             if (i >= values.size()) break;
@@ -49,9 +52,20 @@ public class XMLWriter
 
             try
             {
-                if(StatsWriter.handleNode(field, value, types, evs, stats))
+                if (StatsWriter.handleNode(field, value, types, evs, stats, size))
                 {
-                    
+
+                }
+                else if (field.contains("LITY") || field.contains("ABILITIY"))
+                {
+                    if (field.contains("3"))
+                    {
+                        hiddenAbility += value;
+                    }
+                    else if (!value.trim().isEmpty())
+                    {
+                        ability += value + ", ";
+                    }
                 }
                 else if (field.equals("NAME"))
                 {
@@ -75,7 +89,7 @@ public class XMLWriter
                         statsNode.appendChild(stat);
                         if (vals.length > 1)
                         {
-                            stat = doc.createElement("HUNTEDSPECIES");
+                            stat = doc.createElement("PREY");
                             stat.appendChild(doc.createTextNode(vals[1]));
                             statsNode.appendChild(stat);
                         }
@@ -118,7 +132,7 @@ public class XMLWriter
                 e.printStackTrace();
             }
         }
-        StatsWriter.writeStats(stats, evs, doc, statsNode);
+        StatsWriter.writeStats(stats, evs, size, doc, statsNode);
         if (!types[0].isEmpty())
         {
             Element typesEl = doc.createElement("TYPE");
@@ -131,6 +145,28 @@ public class XMLWriter
                 attr = doc.createAttribute("type2");
                 attr.setValue(types[1]);
                 typesEl.setAttributeNode(attr);
+            }
+        }
+        if (!ability.isEmpty() || !hiddenAbility.isEmpty())
+        {
+            Element abilityEl = doc.createElement("ABILITY");
+            statsNode.appendChild(abilityEl);
+            if (!ability.isEmpty())
+            {
+                if (ability.endsWith(", "))
+                {
+                    ability = ability.trim().substring(0, ability.length() - 2);
+                }
+
+                attr = doc.createAttribute("normal");
+                attr.setValue(ability);
+                abilityEl.setAttributeNode(attr);
+            }
+            if (!hiddenAbility.isEmpty())
+            {
+                attr = doc.createAttribute("hidden");
+                attr.setValue(hiddenAbility);
+                abilityEl.setAttributeNode(attr);
             }
         }
 
@@ -146,16 +182,16 @@ public class XMLWriter
             for (Integer i : levels)
             {
                 attr = doc.createAttribute("lvl_" + i);
-                attr.setValue(data.lvlup.get(i) + "");
+                attr.setValue(data.lvlup.get(i).toString().replace("[", "").replace("]", ""));
                 levelMoves.setAttributeNode(attr);
             }
         }
         if (!data.moves.isEmpty())
         {
-            Element moves = doc.createElement("LVLUP");
+            Element moves = doc.createElement("MISC");
             moveStats.appendChild(moves);
             attr = doc.createAttribute("moves");
-            attr.setValue(data.moves + "");
+            attr.setValue(data.moves.toString().replace("[", "").replace("]", ""));
             moves.setAttributeNode(attr);
         }
     }
